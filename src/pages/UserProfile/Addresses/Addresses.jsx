@@ -1,19 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAddress } from "../../../contexts/AddressProvider.js";
 import { useUserData } from "../../../contexts/UserDataProvider.js";
 import { removeAddressService } from "../../../services/address-services/removeAddressService";
 import { useAuth } from "../../../contexts/AuthProvider.js";
 import "./Addresses.css";
 import { RiAddFill } from "react-icons/ri";
-import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { AddressModal } from "../../Checkout/components/AddressModal/AddressModal";
+import AddressModal from "../../Checkout/components/AddressModal/AddressModal";
 
 export const Addresses = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
   const { auth } = useAuth();
-
   const { userDataState, dispatch } = useUserData();
   const {
     setIsEdit,
@@ -24,18 +21,16 @@ export const Addresses = () => {
 
   const deleteAddress = async (address) => {
     try {
-      setLoading(true);
-      setError("");
+      setIsDeleting(true);
       const response = await removeAddressService(address, auth.token);
       if (response.status === 200) {
         toast.success(`${address.name}'s address successfully deleted!`);
         dispatch({ type: "SET_ADDRESS", payload: response.data.addressList });
       }
-    } catch (error) {
-      setLoading(false);
-      console.error(error);
+    } catch (err) {
+      toast.error("Failed to delete address. Please try again.");
     } finally {
-      setLoading(false);
+      setIsDeleting(false);
     }
   };
 
@@ -48,6 +43,7 @@ export const Addresses = () => {
   const addAddressHandler = () => {
     setIsAddressModalOpen(true);
   };
+
   return (
     <div className="address-section-container">
       <div className="add-address-btn-container">
@@ -76,7 +72,12 @@ export const Addresses = () => {
                   <button onClick={() => editButtonHandler(address)}>
                     Edit
                   </button>
-                  <button onClick={() => deleteAddress(address)}>Delete</button>
+                  <button 
+                    onClick={() => deleteAddress(address)}
+                    disabled={isDeleting}
+                  >
+                    {isDeleting ? "Deleting..." : "Delete"}
+                  </button>
                 </div>
               </div>
             );

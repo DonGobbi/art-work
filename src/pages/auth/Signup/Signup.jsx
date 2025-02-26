@@ -1,219 +1,218 @@
+import React, { useState } from "react";
 import "./Signup.css";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BsEyeSlash } from "react-icons/bs";
-import { BsEye } from "react-icons/bs";
-import { useState } from "react";
-
-import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { BsEyeSlash, BsEye } from "react-icons/bs";
+import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../../../contexts/AuthProvider.js";
-import { signupService } from "../../../services/auth-services/signupService";
-import { toast } from "react-hot-toast";
 import { useData } from "../../../contexts/DataProvider.js";
+import { toast } from "react-hot-toast";
 
 export const Signup = () => {
   const { loading } = useData();
-
+  const navigate = useNavigate();
   const [hidePassword, setHidePassword] = useState(true);
   const [hideConfirmPassword, setHideConfirmPassword] = useState(true);
-  const [signUpLoading, setSignUpLoading] = useState(false);
-  const { setAuth, loginHandler, error, setError } = useAuth();
-
-  const navigate = useNavigate();
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { error, signupHandler } = useAuth();
   const [signupCredential, setSignupCredential] = useState({
     email: "",
     password: "",
     confirmPassword: "",
     firstName: "",
-    lastName: "",
+    lastName: ""
   });
 
-  const signupHandler = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (signupCredential.password !== signupCredential.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      setSignUpLoading(true);
-      setError("");
-      if (signupCredential.password === signupCredential.confirmPassword) {
-        const response = await signupService(
-          signupCredential.email,
-          signupCredential.password,
-          signupCredential.firstName,
-          signupCredential.lastName
-        );
-        if (response.status === 201) {
-          setSignUpLoading(false);
-          toast.success(
-            `You've successfully signed up, ${response.data.createdUser.firstName}`
-          );
-          const encodedToken = response.data.encodedToken;
-          const firstName = response.data.createdUser.firstName;
-          const lastName = response.data.createdUser.lastName;
-          const email = response.data.createdUser.email;
-
-          setAuth({
-            token: encodedToken,
-            isAuth: true,
-            firstName,
-            lastName,
-            email,
-          });
-
-          localStorage.setItem("token", encodedToken);
-          localStorage.setItem("isAuth", true);
-          localStorage.setItem("firstName", firstName);
-          localStorage.setItem("lastName", lastName);
-          localStorage.setItem("email", email);
-
-          navigate("/");
-        }
-      }
-    } catch (error) {
-      setSignUpLoading(false);
-      setError(error.response.data.errors);
+      await signupHandler(signupCredential);
+      toast.success("Account created successfully!");
+      navigate("/login");
+    } catch (err) {
+      toast.error(error || "Registration failed. Please try again.");
     } finally {
-      setSignUpLoading(false);
+      setIsSubmitting(false);
     }
   };
 
+  const handleGoogleSignup = () => {
+    // Implement Google OAuth signup
+    toast.error("Google signup not implemented yet");
+  };
+
+  if (loading) return null;
+
   return (
-    !loading && (
-      <div className="signup-container">
-        <h2>Sign Up</h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            signupHandler();
-          }}
-          className="signup-body"
-        >
-          <div className="email-container">
-            <label htmlFor="email">Email Address</label>
-            <input
-              required
-              onChange={(e) =>
-                setSignupCredential({
-                  ...signupCredential,
-                  email: e.target.value,
-                })
-              }
-              id="email"
-              placeholder="Enter Email"
-              type="email"
-            />
+    <div className="auth-page">
+      <div className="login-container">
+        <div className="auth-header">
+          <h2>Create Account</h2>
+          <p>Join Art Work to discover amazing artworks</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="login-body">
+          <div className="form-group">
+            <label htmlFor="firstName">First Name</label>
+            <div className="input-container">
+              <input
+                id="firstName"
+                type="text"
+                className="form-control"
+                placeholder="Enter your first name"
+                value={signupCredential.firstName}
+                required
+                onChange={(e) =>
+                  setSignupCredential({
+                    ...signupCredential,
+                    firstName: e.target.value,
+                  })
+                }
+              />
+            </div>
           </div>
 
-          <div className="password-container">
+          <div className="form-group">
+            <label htmlFor="lastName">Last Name</label>
+            <div className="input-container">
+              <input
+                id="lastName"
+                type="text"
+                className="form-control"
+                placeholder="Enter your last name"
+                value={signupCredential.lastName}
+                required
+                onChange={(e) =>
+                  setSignupCredential({
+                    ...signupCredential,
+                    lastName: e.target.value,
+                  })
+                }
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="email">Email Address</label>
+            <div className="input-container">
+              <input
+                id="email"
+                type="email"
+                className="form-control"
+                placeholder="Enter your email"
+                value={signupCredential.email}
+                required
+                onChange={(e) =>
+                  setSignupCredential({
+                    ...signupCredential,
+                    email: e.target.value,
+                  })
+                }
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
             <label htmlFor="password">Password</label>
             <div className="input-container">
               <input
+                id="password"
+                type={hidePassword ? "password" : "text"}
+                className="form-control"
+                placeholder="Create a password"
+                value={signupCredential.password}
                 required
+                minLength="6"
                 onChange={(e) =>
                   setSignupCredential({
                     ...signupCredential,
                     password: e.target.value,
                   })
                 }
-                id="password"
-                minLength="8"
-                placeholder="Enter Password"
-                type={hidePassword ? "password" : "text"}
-              />{" "}
-              {!hidePassword ? (
-                <BsEye
-                  className="hide-show-password-eye"
-                  onClick={() => setHidePassword(!hidePassword)}
-                />
-              ) : (
-                <BsEyeSlash
-                  className="hide-show-password-eye"
-                  onClick={() => setHidePassword(!hidePassword)}
-                />
-              )}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setHidePassword(!hidePassword)}
+                aria-label={hidePassword ? "Show password" : "Hide password"}
+              >
+                {hidePassword ? <BsEyeSlash size={20} /> : <BsEye size={20} />}
+              </button>
             </div>
           </div>
 
-          <div className="confirm-password-container">
-            <label for="confirm-password">Confirm Password</label>
+          <div className="form-group">
+            <label htmlFor="confirmPassword">Confirm Password</label>
             <div className="input-container">
               <input
+                id="confirmPassword"
+                type={hideConfirmPassword ? "password" : "text"}
+                className="form-control"
+                placeholder="Confirm your password"
+                value={signupCredential.confirmPassword}
                 required
-                id="confirm-password"
+                minLength="6"
                 onChange={(e) =>
                   setSignupCredential({
                     ...signupCredential,
                     confirmPassword: e.target.value,
                   })
                 }
-                minLength="8"
-                placeholder="Enter Password Again"
-                type={hidePassword ? "password" : "text"}
-              />{" "}
-              {!hidePassword ? (
-                <BsEye
-                  className="hide-show-password-eye"
-                  onClick={() => setHideConfirmPassword(!hideConfirmPassword)}
-                />
-              ) : (
-                <BsEyeSlash
-                  className="hide-show-password-eye"
-                  onClick={() => setHidePassword(!hidePassword)}
-                />
-              )}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setHideConfirmPassword(!hideConfirmPassword)}
+                aria-label={hideConfirmPassword ? "Show password" : "Hide password"}
+              >
+                {hideConfirmPassword ? <BsEyeSlash size={20} /> : <BsEye size={20} />}
+              </button>
             </div>
           </div>
 
-          <div className="name-container">
-            <label htmlFor="first-name">First Name</label>
-            <input
-              onChange={(e) =>
-                setSignupCredential({
-                  ...signupCredential,
-                  firstName: e.target.value,
-                })
-              }
-              id="first-name"
-              placeholder="Enter First Name"
-              type="text"
-            />
-          </div>
+          {error && <div className="error-message">{error}</div>}
 
-          <div className="name-container">
-            <label htmlFor="last-name">Last Name</label>
-            <input
-              onChange={(e) =>
-                setSignupCredential({
-                  ...signupCredential,
-                  lastName: e.target.value,
-                })
-              }
-              id="last-name"
-              placeholder="Enter Last Name"
-              type="text"
-            />
-          </div>
-
-          <div className="remember-me-container">
-            <div>
-              <input required name="remember-me" type="checkbox" />
-              <label htmlFor="remember-me">
-                I accept all terms and conditions
-              </label>
-            </div>
-          </div>
-          {error && <p className="error">{error[0]}</p>}
-
-          <div className="signup-btn-container">
-            <input value="Sign Up" type="submit" />
+          <div className="auth-footer">
             <button
-              onClick={(e) => {
-                loginHandler(e, "aniketsaini65@gmail.com", "aniketSaini258");
-              }}
+              type="submit"
+              className="submit-button"
+              disabled={isSubmitting || !signupCredential.email || !signupCredential.password || !signupCredential.confirmPassword}
             >
-              Login with Test Credentials
+              {isSubmitting ? "Creating Account..." : "Create Account"}
             </button>
+
+            <div className="divider">
+              <span>OR</span>
+            </div>
+
+            <div className="social-login">
+              <button
+                type="button"
+                className="social-button"
+                onClick={handleGoogleSignup}
+              >
+                <FcGoogle size={20} />
+                Sign up with Google
+              </button>
+            </div>
+
+            <div className="auth-links">
+              <span>Already have an account?</span>
+              <Link to="/login" className="auth-link">
+                Sign In
+              </Link>
+            </div>
           </div>
-          <Link to="/login">Already have an account?</Link>
         </form>
       </div>
-    )
+    </div>
   );
 };
+
+export default Signup;

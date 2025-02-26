@@ -1,11 +1,10 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Outlet } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useData } from "../../contexts/DataProvider.js";
-import { useState } from "react";
+import { useAuth } from "../../contexts/AuthProvider.js";
 
 import "./UserProfile.css";
-import { useAuth } from "../../contexts/AuthProvider.js";
 
 export const UserProfile = () => {
   const { loading } = useData();

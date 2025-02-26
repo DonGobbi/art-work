@@ -53,25 +53,21 @@ export const Coupons = ({ couponSelected, setCouponSelected }) => {
 
       {isCouponClicked && (
         <div className="coupon-list-container">
-          {couponsData.map((coupon) => {
-            const { id, name, description, minimumPurchase, discount, amount } =
-              coupon;
-            return (
-              <div key={id} className="coupon-card">
-                <input
-                  checked={couponSelected?.find((coupon) => coupon.id === id)}
-                  onChange={(e) => couponHandler(e, coupon)}
-                  disabled={totalDiscountedPriceBeforeCoupon <= minimumPurchase}
-                  id={name}
-                  type="checkbox"
-                />
-                <label htmlFor={name}>
-                  <p className="name">{name}</p>
-                  <p className="description">{description}</p>
-                </label>
-              </div>
-            );
-          })}
+          {couponsData.map(({ id, name, description, minimumPurchase }) => (
+            <div key={id} className="coupon-card">
+              <input
+                checked={couponSelected?.find((coupon) => coupon.id === id)}
+                onChange={(e) => couponHandler(e, couponsData.find(c => c.id === id))}
+                disabled={totalDiscountedPriceBeforeCoupon <= minimumPurchase}
+                id={name}
+                type="checkbox"
+              />
+              <label htmlFor={name}>
+                <p className="name">{name}</p>
+                <p className="description">{description}</p>
+              </label>
+            </div>
+          ))}
         </div>
       )}
     </div>

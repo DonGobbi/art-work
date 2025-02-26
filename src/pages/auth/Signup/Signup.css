@@ -1,3 +1,6 @@
+/* Import the shared styles from Login.css */
+@import url('../Login/Login.css');
+
 .signup-container {
   padding: 2em;
   width: 350px;
@@ -161,6 +164,50 @@
   padding: 5px 10px;
   border-radius: 3px;
   border: 1px solid rgb(210, 210, 210);
+}
+
+.login-container {
+  max-width: 450px; /* Slightly wider for signup form */
+}
+
+.auth-links {
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.auth-links span {
+  color: #666;
+}
+
+.password-strength {
+  margin-top: 0.25rem;
+  font-size: 0.75rem;
+}
+
+.password-strength.weak {
+  color: #dc3545;
+}
+
+.password-strength.medium {
+  color: #ffc107;
+}
+
+.password-strength.strong {
+  color: #28a745;
+}
+
+.name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 480px) {
+  .name-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
 }
 
 @media (min-width: 768px) {

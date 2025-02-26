@@ -1,74 +1,162 @@
-.address-modal-container {
+.address-modal-overlay {
   position: fixed;
-  inset: 0;
-  z-index: 6;
-  background-color: rgba(0, 0, 0, 0.2);
-  margin: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease-in-out;
 }
 
-.address-modal-container .address-input-container {
-  position: absolute;
-  inset: 0;
-  background-color: rgb(255, 255, 255);
-  margin: auto;
-  width: 290px;
-  height: 520px;
-  text-align: center;
-  border-radius: 10px;
+.address-modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
 }
 
-.address-input-container h1 {
-  margin-top: 25px;
-  color: rgb(33, 33, 33);
-  margin-bottom: 25px;
-}
-
-.address-modal-container .address-input-container input {
-  padding: 8px 16px;
-  display: block;
+.address-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
   width: 90%;
-  margin: 12px auto;
-  border: 1px solid rgb(226, 226, 226);
-  border-radius: 5px;
+  max-width: 500px;
+  position: relative;
+  transform: translateY(-20px);
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-.address-modal-container .submit {
-  color: white;
-  background-color: var(--primary-color);
-  font-weight: 600;
-  display: inline;
+.address-modal.active {
+  transform: translateY(0);
 }
 
-.address-modal-container .submit:hover {
-  cursor: pointer;
-  background-color: black;
-}
-.address-modal-container .btn-container {
+.address-modal-header {
   display: flex;
   justify-content: space-between;
-  padding: 0 20px;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
 }
 
-.address-modal-container .btn-container button {
+.address-modal-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.address-modal-close {
+  background: none;
   border: none;
-  padding: 8px 16px;
-
-  border-radius: 5px;
-}
-
-.address-modal-container .btn-container button:hover {
+  font-size: 1.5rem;
   cursor: pointer;
-  background-color: var(--secondary-background-color-onhover);
+  color: #666;
+  transition: color 0.2s ease;
 }
 
-.address-modal-container .btn-container button:last-child {
-  flex-grow: 1;
-  margin-left: 10px;
+.address-modal-close:hover {
+  color: #333;
 }
 
-@media (min-width: 768px) {
-  .address-modal-container .address-input-container{
-    width: 390px;
-  }
+.address-form {
+  display: grid;
+  gap: 1rem;
+}
 
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.form-input {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.1);
+}
+
+.form-input.error {
+  border-color: #dc3545;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.address-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary {
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+.btn-secondary:hover {
+  background: #e9ecef;
+}
+
+.btn-primary {
+  background: #007bff;
+  border: 1px solid #0056b3;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #0056b3;
+}
+
+.btn-primary:disabled {
+  background: #ccc;
+  border-color: #bbb;
+  cursor: not-allowed;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+.form-input.shake {
+  animation: shake 0.4s ease-in-out;
 }

@@ -1,49 +1,95 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Login.css";
-import { Link } from "react-router-dom";
-import { BsEyeSlash } from "react-icons/bs";
-import { BsEye } from "react-icons/bs";
-import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { BsEyeSlash, BsEye } from "react-icons/bs";
+import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../../../contexts/AuthProvider.js";
 import { useData } from "../../../contexts/DataProvider.js";
+import { toast } from "react-hot-toast";
 
 export const Login = () => {
   const { loading } = useData();
+  const navigate = useNavigate();
   const [hidePassword, setHidePassword] = useState(true);
-  const { error, loginCredential, setLoginCredential, loginHandler } =
-    useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { error, loginCredential, setLoginCredential, loginHandler } = useAuth();
 
   const { email, password } = loginCredential;
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      await loginHandler(e, email, password);
+      toast.success("Login successful!");
+      navigate("/");
+    } catch (err) {
+      toast.error(error || "Login failed. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleTestLogin = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    try {
+      await loginHandler(e, "aniketsaini65@gmail.com", "aniketSaini258");
+      toast.success("Test login successful!");
+      navigate("/");
+    } catch (err) {
+      toast.error(error || "Test login failed. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleGoogleLogin = () => {
+    // Implement Google OAuth login
+    toast.error("Google login not implemented yet");
+  };
+
+  if (loading) return null;
+
   return (
-    !loading && (
+    <div className="auth-page">
       <div className="login-container">
-        <h2>Login</h2>
-        <form
-          onSubmit={(e) => loginHandler(e, email, password)}
-          className="login-body"
-        >
-          <div className="email-container">
-            <label htmlFor="email">Email</label>
-            <input
-              value={loginCredential.email}
-              required
-              onChange={(e) =>
-                setLoginCredential({
-                  ...loginCredential,
-                  email: e.target.value,
-                })
-              }
-              id="email"
-              placeholder="Email Address"
-              type="email"
-            />
+        <div className="auth-header">
+          <h2>Welcome Back</h2>
+          <p>Sign in to continue to Art Work</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="login-body">
+          <div className="form-group">
+            <label htmlFor="email">Email Address</label>
+            <div className="input-container">
+              <input
+                id="email"
+                type="email"
+                className="form-control"
+                placeholder="Enter your email"
+                value={loginCredential.email}
+                required
+                onChange={(e) =>
+                  setLoginCredential({
+                    ...loginCredential,
+                    email: e.target.value,
+                  })
+                }
+              />
+            </div>
           </div>
 
-          <div className="password-container">
+          <div className="form-group">
             <label htmlFor="password">Password</label>
             <div className="input-container">
               <input
+                id="password"
+                type={hidePassword ? "password" : "text"}
+                className="form-control"
+                placeholder="Enter your password"
                 value={loginCredential.password}
                 required
                 onChange={(e) =>
@@ -52,48 +98,65 @@ export const Login = () => {
                     password: e.target.value,
                   })
                 }
-                id="password"
-                placeholder="Password"
-                type={hidePassword ? "password" : "text"}
-              />{" "}
-              {!hidePassword ? (
-                <BsEye
-                  className="hide-show-password-eye"
-                  onClick={() => setHidePassword(!hidePassword)}
-                />
-              ) : (
-                <BsEyeSlash
-                  className="hide-show-password-eye"
-                  onClick={() => setHidePassword(!hidePassword)}
-                />
-              )}
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setHidePassword(!hidePassword)}
+                aria-label={hidePassword ? "Show password" : "Hide password"}
+              >
+                {hidePassword ? <BsEyeSlash size={20} /> : <BsEye size={20} />}
+              </button>
             </div>
+            {error && <div className="error-message">{error}</div>}
           </div>
 
-          <div className="remember-me-container">
-            <div>
-              <input name="remember-me" type="checkbox" />
-              <label htmlFor="remember-me">Keep me signed in</label>
-            </div>
-
-            <p>Forgot your password?</p>
-          </div>
-          {error && <span className="error">{error}</span>}
-          <div className="login-btn-container">
-            <input value="Login" type="submit" />
+          <div className="auth-footer">
             <button
-              onClick={(e) => {
-                loginHandler(e, "aniketsaini65@gmail.com", "aniketSaini258");
-              }}
+              type="submit"
+              className="submit-button"
+              disabled={isSubmitting || !email || !password}
             >
-              Login with Test Credentials
+              {isSubmitting ? "Signing in..." : "Sign In"}
             </button>
+
+            <button
+              type="button"
+              className="submit-button test-login"
+              onClick={handleTestLogin}
+              disabled={isSubmitting}
+            >
+              Sign In with Test Account
+            </button>
+
+            <div className="divider">
+              <span>OR</span>
+            </div>
+
+            <div className="social-login">
+              <button
+                type="button"
+                className="social-button"
+                onClick={handleGoogleLogin}
+              >
+                <FcGoogle size={20} />
+                Continue with Google
+              </button>
+            </div>
+
+            <div className="auth-links">
+              <Link to="/forgot-password" className="auth-link">
+                Forgot Password?
+              </Link>
+              <Link to="/signup" className="auth-link">
+                Create Account
+              </Link>
+            </div>
           </div>
-          <Link className="new-account" to="/signup">
-            Create a new account?
-          </Link>
         </form>
       </div>
-    )
+    </div>
   );
 };
+
+export default Login;
