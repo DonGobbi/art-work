@@ -1,54 +1,60 @@
 import React, { useState } from "react";
 import "./Login.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { BsEyeSlash, BsEye } from "react-icons/bs";
 import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../../../contexts/AuthProvider.js";
 import { useData } from "../../../contexts/DataProvider.js";
 import { toast } from "react-hot-toast";
 
+// Default test account credentials
+const TEST_CREDENTIALS = {
+  email: "aniketsaini65@gmail.com",
+  password: "aniketSaini258",
+};
+
 export const Login = () => {
   const { loading } = useData();
-  const navigate = useNavigate();
   const [hidePassword, setHidePassword] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { error, loginCredential, setLoginCredential, loginHandler } = useAuth();
-
-  const { email, password } = loginCredential;
+  const { error, loginHandler } = useAuth();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
     
+    if (!formData.email || !formData.password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
     try {
-      await loginHandler(e, email, password);
-      toast.success("Login successful!");
-      navigate("/");
+      await loginHandler(e, formData.email, formData.password);
     } catch (err) {
-      toast.error(error || "Login failed. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      console.error("Login error:", err);
     }
   };
 
   const handleTestLogin = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    if (loading) return;
     
     try {
-      await loginHandler(e, "aniketsaini65@gmail.com", "aniketSaini258");
-      toast.success("Test login successful!");
-      navigate("/");
+      await loginHandler(e, TEST_CREDENTIALS.email, TEST_CREDENTIALS.password);
     } catch (err) {
-      toast.error(error || "Test login failed. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      console.error("Test login error:", err);
+      toast.error("Test login failed. Please try again later.");
     }
   };
 
-  const handleGoogleLogin = () => {
-    // Implement Google OAuth login
-    toast.error("Google login not implemented yet");
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   if (loading) return null;
@@ -67,17 +73,14 @@ export const Login = () => {
             <div className="input-container">
               <input
                 id="email"
+                name="email"
                 type="email"
                 className="form-control"
                 placeholder="Enter your email"
-                value={loginCredential.email}
+                value={formData.email}
                 required
-                onChange={(e) =>
-                  setLoginCredential({
-                    ...loginCredential,
-                    email: e.target.value,
-                  })
-                }
+                onChange={handleInputChange}
+                autoComplete="email"
               />
             </div>
           </div>
@@ -87,17 +90,14 @@ export const Login = () => {
             <div className="input-container">
               <input
                 id="password"
+                name="password"
                 type={hidePassword ? "password" : "text"}
                 className="form-control"
                 placeholder="Enter your password"
-                value={loginCredential.password}
+                value={formData.password}
                 required
-                onChange={(e) =>
-                  setLoginCredential({
-                    ...loginCredential,
-                    password: e.target.value,
-                  })
-                }
+                onChange={handleInputChange}
+                autoComplete="current-password"
               />
               <button
                 type="button"
@@ -108,49 +108,51 @@ export const Login = () => {
                 {hidePassword ? <BsEyeSlash size={20} /> : <BsEye size={20} />}
               </button>
             </div>
-            {error && <div className="error-message">{error}</div>}
           </div>
+
+          {error && <div className="error-message">{error}</div>}
 
           <div className="auth-footer">
             <button
               type="submit"
               className="submit-button"
-              disabled={isSubmitting || !email || !password}
+              disabled={loading}
             >
-              {isSubmitting ? "Signing in..." : "Sign In"}
+              {loading ? "Signing in..." : "Sign In"}
             </button>
 
             <button
               type="button"
-              className="submit-button test-login"
+              className="test-login-button"
               onClick={handleTestLogin}
-              disabled={isSubmitting}
+              disabled={loading}
             >
-              Sign In with Test Account
+              {loading ? "Signing in..." : "Sign In with Test Account"}
             </button>
 
             <div className="divider">
               <span>OR</span>
             </div>
 
-            <div className="social-login">
-              <button
-                type="button"
-                className="social-button"
-                onClick={handleGoogleLogin}
-              >
-                <FcGoogle size={20} />
-                Continue with Google
-              </button>
-            </div>
+            <button
+              type="button"
+              className="social-button"
+              onClick={() => toast.error("Google login not implemented yet")}
+            >
+              <FcGoogle size={24} />
+              Sign in with Google
+            </button>
 
             <div className="auth-links">
               <Link to="/forgot-password" className="auth-link">
                 Forgot Password?
               </Link>
-              <Link to="/signup" className="auth-link">
-                Create Account
-              </Link>
+              <div className="signup-link">
+                <span>Don't have an account?</span>
+                <Link to="/signup" className="auth-link">
+                  Sign Up
+                </Link>
+              </div>
             </div>
           </div>
         </form>

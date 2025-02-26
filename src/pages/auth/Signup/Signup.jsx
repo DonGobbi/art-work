@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./Signup.css";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { BsEyeSlash, BsEye } from "react-icons/bs";
 import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../../../contexts/AuthProvider.js";
@@ -9,12 +9,10 @@ import { toast } from "react-hot-toast";
 
 export const Signup = () => {
   const { loading } = useData();
-  const navigate = useNavigate();
   const [hidePassword, setHidePassword] = useState(true);
   const [hideConfirmPassword, setHideConfirmPassword] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const { error, signupHandler } = useAuth();
-  const [signupCredential, setSignupCredential] = useState({
+  const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
@@ -25,26 +23,36 @@ export const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (signupCredential.password !== signupCredential.confirmPassword) {
+    // Form validation
+    if (!formData.email || !formData.password || !formData.firstName || !formData.lastName) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
 
-    setIsSubmitting(true);
     try {
-      await signupHandler(signupCredential);
-      toast.success("Account created successfully!");
-      navigate("/login");
+      await signupHandler(formData);
     } catch (err) {
-      toast.error(error || "Registration failed. Please try again.");
-    } finally {
-      setIsSubmitting(false);
+      // Error is already handled in AuthProvider
+      console.error("Signup error:", err);
     }
   };
 
-  const handleGoogleSignup = () => {
-    // Implement Google OAuth signup
-    toast.error("Google signup not implemented yet");
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
   if (loading) return null;
@@ -63,17 +71,13 @@ export const Signup = () => {
             <div className="input-container">
               <input
                 id="firstName"
+                name="firstName"
                 type="text"
                 className="form-control"
                 placeholder="Enter your first name"
-                value={signupCredential.firstName}
+                value={formData.firstName}
                 required
-                onChange={(e) =>
-                  setSignupCredential({
-                    ...signupCredential,
-                    firstName: e.target.value,
-                  })
-                }
+                onChange={handleInputChange}
               />
             </div>
           </div>
@@ -83,17 +87,13 @@ export const Signup = () => {
             <div className="input-container">
               <input
                 id="lastName"
+                name="lastName"
                 type="text"
                 className="form-control"
                 placeholder="Enter your last name"
-                value={signupCredential.lastName}
+                value={formData.lastName}
                 required
-                onChange={(e) =>
-                  setSignupCredential({
-                    ...signupCredential,
-                    lastName: e.target.value,
-                  })
-                }
+                onChange={handleInputChange}
               />
             </div>
           </div>
@@ -103,17 +103,13 @@ export const Signup = () => {
             <div className="input-container">
               <input
                 id="email"
+                name="email"
                 type="email"
                 className="form-control"
                 placeholder="Enter your email"
-                value={signupCredential.email}
+                value={formData.email}
                 required
-                onChange={(e) =>
-                  setSignupCredential({
-                    ...signupCredential,
-                    email: e.target.value,
-                  })
-                }
+                onChange={handleInputChange}
               />
             </div>
           </div>
@@ -123,18 +119,14 @@ export const Signup = () => {
             <div className="input-container">
               <input
                 id="password"
+                name="password"
                 type={hidePassword ? "password" : "text"}
                 className="form-control"
                 placeholder="Create a password"
-                value={signupCredential.password}
+                value={formData.password}
                 required
                 minLength="6"
-                onChange={(e) =>
-                  setSignupCredential({
-                    ...signupCredential,
-                    password: e.target.value,
-                  })
-                }
+                onChange={handleInputChange}
               />
               <button
                 type="button"
@@ -152,18 +144,14 @@ export const Signup = () => {
             <div className="input-container">
               <input
                 id="confirmPassword"
+                name="confirmPassword"
                 type={hideConfirmPassword ? "password" : "text"}
                 className="form-control"
                 placeholder="Confirm your password"
-                value={signupCredential.confirmPassword}
+                value={formData.confirmPassword}
                 required
                 minLength="6"
-                onChange={(e) =>
-                  setSignupCredential({
-                    ...signupCredential,
-                    confirmPassword: e.target.value,
-                  })
-                }
+                onChange={handleInputChange}
               />
               <button
                 type="button"
@@ -182,9 +170,9 @@ export const Signup = () => {
             <button
               type="submit"
               className="submit-button"
-              disabled={isSubmitting || !signupCredential.email || !signupCredential.password || !signupCredential.confirmPassword}
+              disabled={loading}
             >
-              {isSubmitting ? "Creating Account..." : "Create Account"}
+              {loading ? "Creating Account..." : "Create Account"}
             </button>
 
             <div className="divider">
@@ -195,7 +183,7 @@ export const Signup = () => {
               <button
                 type="button"
                 className="social-button"
-                onClick={handleGoogleSignup}
+                onClick={() => toast.error("Google signup not implemented yet")}
               >
                 <FcGoogle size={20} />
                 Sign up with Google

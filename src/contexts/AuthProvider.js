@@ -37,6 +37,8 @@ export const AuthProvider = ({ children }) => {
 
   const loginHandler = async (e, email, password) => {
     e.preventDefault();
+    if (loading) return; // Prevent multiple submissions
+
     try {
       setLoading(true);
       setError("");
@@ -61,27 +63,37 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("email", email);
 
         setLoginCredential({ email: "", password: "" });
-        toast.success(`Welcome back, ${firstName}!`);
-        navigate(location?.state?.from?.pathname || "/");
+        
+        // First update the state and storage, then show toast and navigate
+        setTimeout(() => {
+          toast.success(`Welcome back, ${firstName}!`);
+          navigate("/");
+        }, 0);
       }
     } catch (error) {
-      setError(error.response?.data?.errors?.[0] || "Login failed. Please try again.");
-      toast.error(error.response?.data?.errors?.[0] || "Login failed. Please try again.");
+      const errorMessage = error.response?.data?.errors?.[0] || "Login failed. Please try again.";
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   const signupHandler = async (credentials) => {
+    if (loading) return; // Prevent multiple submissions
+
     try {
       setLoading(true);
       setError("");
       const { email, password, firstName, lastName } = credentials;
+      
+      if (!email || !password || !firstName || !lastName) {
+        throw new Error("Please fill in all required fields");
+      }
+
       const response = await signupService(email, password, firstName, lastName);
 
       if (response.status === 201) {
-        const { encodedToken, createdUser } = response.data;
-        toast.success(`Welcome to Art Work, ${createdUser.firstName}!`);
         setSignupCredential({
           email: "",
           password: "",
@@ -89,11 +101,17 @@ export const AuthProvider = ({ children }) => {
           firstName: "",
           lastName: "",
         });
-        navigate("/login");
+        
+        // First reset the form, then show toast and navigate
+        setTimeout(() => {
+          toast.success(`Account created successfully! Please login to continue.`);
+          navigate("/login");
+        }, 0);
       }
     } catch (error) {
-      setError(error.response?.data?.errors?.[0] || "Signup failed. Please try again.");
-      toast.error(error.response?.data?.errors?.[0] || "Signup failed. Please try again.");
+      const errorMessage = error.response?.data?.errors?.[0] || error.message || "Signup failed. Please try again.";
+      setError(errorMessage);
+      toast.error(errorMessage);
       throw error;
     } finally {
       setLoading(false);
