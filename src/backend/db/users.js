@@ -1,14 +1,17 @@
 import { v4 as uuid } from "uuid";
-import { formatDate } from "../utils/authUtils.js";
+import { formatDate } from "../utils/authUtils";
 
 export const users = [
   {
     _id: uuid(),
-    firstName: "Aniket",
-    lastName: "Saini",
-    email: "aniketsaini65@gmail.com",
-    password: "aniketSaini258",
+    firstName: "Test",
+    lastName: "User",
+    email: "test@gmail.com",
+    password: "test123",
     createdAt: formatDate(),
     updatedAt: formatDate(),
+    cart: [],
+    wishlist: [],
+    addressList: [],
   },
 ];

@@ -5,11 +5,12 @@ import "./CategoriesSection.css";
 
 export const CategoriesSection = () => {
   const { state, dispatch } = useData();
+  
   return (
     <div>
       <h1 className="categories-heading">Shop By Categories</h1>
       <div className="categories-container">
-        {state.allCategories.map(({ _id, categoryName, img }) => (
+        {state.allCategories?.map(({ _id, categoryName, img }) => (
           <Link
             onClick={() =>
               dispatch({
@@ -21,10 +22,10 @@ export const CategoriesSection = () => {
             className="category-card"
             key={_id}
           >
-            <h3>{categoryName}</h3>
             <div className="img-cont">
               <img src={img} alt={categoryName} />
             </div>
+            <h3>{categoryName.replace(/_/g, " ")}</h3>
           </Link>
         ))}
       </div>

@@ -1,9 +1,11 @@
-export const getCategoryWiseProducts = (products, categories) =>
-  !categories.length
-    ? products
-    : products.filter((product) =>
-        categories.some(
-          (category) =>
-            product.category_name.toUpperCase() === category.toUpperCase()
-        )
-      );
+export const getCategoryWiseProducts = (products, categories) => {
+  if (!categories || !categories.length) {
+    return products;
+  }
+
+  return products.filter((product) =>
+    categories.some(
+      (category) => product.category_name === category
+    )
+  );
+};

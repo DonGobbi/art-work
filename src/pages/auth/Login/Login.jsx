@@ -9,8 +9,8 @@ import { toast } from "react-hot-toast";
 
 // Default test account credentials
 const TEST_CREDENTIALS = {
-  email: "aniketsaini65@gmail.com",
-  password: "aniketSaini258",
+  email: "test@gmail.com",
+  password: "test123",
 };
 
 export const Login = () => {
@@ -43,9 +43,10 @@ export const Login = () => {
     
     try {
       await loginHandler(e, TEST_CREDENTIALS.email, TEST_CREDENTIALS.password);
+      toast.success("Test login successful!");
     } catch (err) {
       console.error("Test login error:", err);
-      toast.error("Test login failed. Please try again later.");
+      toast.error("Test login failed. Please try again.");
     }
   };
 

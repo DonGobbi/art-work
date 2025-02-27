@@ -1,62 +1,191 @@
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .orders-container {
-  padding: 30px;
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 2rem;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.no-orders {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #fff, #f8f9fa);
+  border-radius: 20px;
+  margin: 2rem auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  animation: slideIn 0.6s ease-out;
+}
+
+.no-orders h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.no-orders p {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
 }
 
 .ordered-items-card {
   display: flex;
-  flex-flow: column nowrap;
-  margin-bottom: 30px;
-  border-bottom: 1px solid rgb(231, 231, 231);
-}
-.ordered-items-card > * {
-  margin-bottom: 6px;
-}
-
-.ordered-items-card .order-id-container {
-  font-weight: 600;
-}
-
-.ordered-items-card .payment-id-container {
-  font-size: small;
-}
-.payment-id-container {
-  color: grey;
+  flex-direction: column;
+  background: #fff;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  animation: slideIn 0.6s ease-out;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.orders-container .price-container {
-  color: grey;
-  font-size: small;
+.ordered-items-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
 }
 
-.orders-container .products-card {
+.order-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: grey;
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.ordered-items-card img {
-  width: 90px;
+.order-id-container {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  margin-bottom: 0.5rem;
 }
 
-.ordered-items-card .products-card .description {
+.payment-id-container {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.price-container {
   display: flex;
-  flex-flow: column nowrap;
+  justify-content: space-between;
   align-items: center;
+  padding: 1rem 0;
+  color: #444;
+  font-size: 1rem;
 }
 
-.ordered-items-card .products-card .description > * {
-  margin-bottom: 5px;
-}
-.ordered-items-card .products-card .name {
-  color: black;
-  font-size: small;
+.price-container span:first-child {
+  font-weight: 600;
 }
 
-.ordered-items-card .products-card .qty {
-  font-size: small;
+.delivery-address {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin: 1rem 0;
 }
 
-.ordered-items-card .products-card .price {
-  font-size: small;
+.delivery-address-title {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.delivery-address-content {
+  color: #666;
+  line-height: 1.5;
+}
+
+.products-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.products-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 15px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.products-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+}
+
+.products-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.description {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.description .name {
+  font-weight: 600;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.description .qty,
+.description .price {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.description .price {
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .orders-container {
+    padding: 1rem;
+  }
+
+  .ordered-items-card {
+    padding: 1.5rem;
+  }
+
+  .products-container {
+    grid-template-columns: 1fr;
+  }
+
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

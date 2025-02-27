@@ -1,93 +1,56 @@
 import React, { useState } from "react";
-import { useAddress } from "../../../contexts/AddressProvider.js";
-import { useUserData } from "../../../contexts/UserDataProvider.js";
-import { removeAddressService } from "../../../services/address-services/removeAddressService";
-import { useAuth } from "../../../contexts/AuthProvider.js";
+import { useAddress } from "../../../contexts/AddressProvider";
 import "./Addresses.css";
-import { RiAddFill } from "react-icons/ri";
-import { toast } from "react-hot-toast";
-import AddressModal from "../../Checkout/components/AddressModal/AddressModal";
 
 export const Addresses = () => {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const { auth } = useAuth();
-  const { userDataState, dispatch } = useUserData();
-  const {
-    setIsEdit,
-    setAddressForm,
-    isAddressModalOpen,
-    setIsAddressModalOpen,
-  } = useAddress();
-
-  const deleteAddress = async (address) => {
-    try {
-      setIsDeleting(true);
-      const response = await removeAddressService(address, auth.token);
-      if (response.status === 200) {
-        toast.success(`${address.name}'s address successfully deleted!`);
-        dispatch({ type: "SET_ADDRESS", payload: response.data.addressList });
-      }
-    } catch (err) {
-      toast.error("Failed to delete address. Please try again.");
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  const editButtonHandler = (add) => {
-    setIsAddressModalOpen(true);
-    setAddressForm(add);
-    setIsEdit(true);
-  };
-
-  const addAddressHandler = () => {
-    setIsAddressModalOpen(true);
-  };
+  const { addresses } = useAddress();
+  const [showModal, setShowModal] = useState(false);
 
   return (
-    <div className="address-section-container">
-      <div className="add-address-btn-container">
-        <button onClick={addAddressHandler}>
-          <RiAddFill className="plus" />
-          New Address
-        </button>
-      </div>
-      <div className="profile-address-container">
-        {userDataState.addressList.length ? (
-          userDataState.addressList.map((address) => {
-            const { name, street, city, state, country, pincode, phone, _id } =
-              address;
-            return (
-              <div className="address-card" key={_id}>
-                <p className="name">{name}</p>
-                <p className="address">
-                  <span>Address:</span> {street}, {city}, {state}, {country} -{" "}
-                  {pincode}
-                </p>
-                <p className="phone">
-                  <span>Phone: </span>
-                  {phone}
-                </p>
-                <div className="address-btn-container">
-                  <button onClick={() => editButtonHandler(address)}>
-                    Edit
-                  </button>
-                  <button 
-                    onClick={() => deleteAddress(address)}
-                    disabled={isDeleting}
-                  >
-                    {isDeleting ? "Deleting..." : "Delete"}
-                  </button>
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <p>No Address To Display</p>
-        )}
+    <div className="addresses-container">
+      <div className="addresses-header">
+        <h2>Saved Addresses</h2>
+        <p>Manage your delivery addresses</p>
       </div>
 
-      {isAddressModalOpen && <AddressModal />}
+      <div className="add-address-container">
+        <button className="add-address-btn" onClick={() => setShowModal(true)}>
+          <span className="plus">+</span>
+          Add New Address
+        </button>
+      </div>
+
+      {addresses?.length > 0 ? (
+        <div className="addresses-grid">
+          {addresses.map((address, index) => (
+            <div key={index} className="address-card">
+              <div className="recipient-name">{address.name}</div>
+              <div className="address-details">
+                {address.street}<br />
+                {address.city}, {address.state} {address.zipCode}<br />
+                Phone: {address.phone}
+              </div>
+              <div className="address-actions">
+                <button className="edit-btn">Edit</button>
+                <button className="delete-btn">Delete</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="no-addresses">
+          <h2>No Addresses Added</h2>
+          <p>Add a new address to get started with your shopping experience.</p>
+        </div>
+      )}
+
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            {/* Modal content will be added here */}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

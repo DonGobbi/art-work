@@ -1,4 +1,5 @@
 import { Response } from "miragejs";
+import { categories } from "../db/categories";
 
 /**
  * All the routes related to Category are present here.
@@ -10,15 +11,16 @@ import { Response } from "miragejs";
  * send GET Request at /api/categories
  * */
 
-export const getAllCategoriesHandler = function () {
+export const getAllCategoriesHandler = function (schema) {
   try {
-    return new Response(200, {}, { categories: this.db.categories });
+    const categories = schema.categories.all();
+    return new Response(200, {}, { categories: categories.models });
   } catch (error) {
     return new Response(
       500,
       {},
       {
-        error,
+        errors: ["Failed to fetch categories"],
       }
     );
   }
@@ -33,13 +35,20 @@ export const getCategoryHandler = function (schema, request) {
   const categoryId = request.params.categoryId;
   try {
     const category = schema.categories.findBy({ _id: categoryId });
+    if (!category) {
+      return new Response(
+        404,
+        {},
+        { errors: ["Category not found"] }
+      );
+    }
     return new Response(200, {}, { category });
   } catch (error) {
     return new Response(
       500,
       {},
       {
-        error,
+        errors: ["Failed to fetch category"],
       }
     );
   }

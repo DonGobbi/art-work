@@ -7,9 +7,9 @@ import { HeroVideo } from "./components/HeroVideo/HeroVideo";
 import { useData } from "../../contexts/DataProvider.js";
 
 export const Home = () => {
-  const { loading } = useData();
+  const { productsLoading, categoriesLoading } = useData();
   return (
-    !loading && (
+    !productsLoading && !categoriesLoading && (
       <div className="home-page">
         <div className="hero">
           <HeroVideo />

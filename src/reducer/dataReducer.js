@@ -75,7 +75,15 @@ export const dataReducer = (state, action) => {
       };
 
     case "RESET":
-      return { ...state, filters: { ...action.payload } };
+      return {
+        ...state,
+        filters: {
+          rating: "",
+          categories: [],
+          price: [],
+          sort: "",
+        },
+      };
 
     default:
       return state;

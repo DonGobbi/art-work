@@ -1,7 +1,6 @@
 import { TbAdjustmentsHorizontal } from "react-icons/tb";
 import { RxCross2 } from "react-icons/rx";
 import { useState } from "react";
-
 import React from "react";
 import "./Filter.css";
 import { useData } from "../../../../contexts/DataProvider.js";
@@ -59,6 +58,30 @@ export const Filter = () => {
               : "filter-types-container"
           }
         >
+          <div className="category-container">
+            <h3>Categories</h3>
+            <div className="category-input-container">
+              {state.allCategories?.map(({ _id, categoryName }) => (
+                <div className="category-input-container" key={_id}>
+                  <label htmlFor={`category-${categoryName}`}>
+                    {categoryName.replace(/_/g, " ")}
+                    <input
+                      checked={state.filters.categories.includes(categoryName)}
+                      onChange={() =>
+                        dispatch({
+                          type: "ADD_CATEGORIES",
+                          payload: categoryName,
+                        })
+                      }
+                      id={`category-${categoryName}`}
+                      type="checkbox"
+                    />
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="price-container">
             <h3>Price</h3>
             <div className="price-input-container">
@@ -113,7 +136,7 @@ export const Filter = () => {
                 />
               </label>
 
-              <label htmlFor="above 2000">
+              <label htmlFor="above-2000">
                 Over $2000
                 <input
                   checked={state.filters.price.find((price) =>
@@ -125,7 +148,7 @@ export const Filter = () => {
                       payload: { min: 2000, max: 5000 },
                     })
                   }
-                  id="above 2000"
+                  id="above-2000"
                   type="checkbox"
                 />
               </label>
@@ -136,15 +159,9 @@ export const Filter = () => {
             <h3>Ratings (min)</h3>
             <div className="input-range">
               <datalist id="markers">
-                <option label="0" value="0">
-                  0
-                </option>
-                <option label="2.5" value="2.5">
-                  2.5
-                </option>
-                <option label="5.0" value="5">
-                  5
-                </option>
+                <option value="0">0</option>
+                <option value="2.5">2.5</option>
+                <option value="5">5</option>
               </datalist>
               <input
                 step="0.1"
@@ -154,8 +171,8 @@ export const Filter = () => {
                     payload: Number(e.target.value),
                   })
                 }
-                // list="markers"
-                id="price"
+                list="markers"
+                id="rating"
                 type="range"
                 min="0"
                 max="5.0"
@@ -164,36 +181,11 @@ export const Filter = () => {
             </div>
           </div>
 
-          <div className="category-container">
-            <h3>Categories</h3>
-            <div className="category-input-container">
-              {state.allCategories?.map(({ categoryName }) => (
-                <div className="category-input-container" key={categoryName}>
-                  <label htmlFor={`category-${categoryName}`}>
-                    {`${categoryName}'s wear`}
-                    <input
-                      checked={state.filters.categories.includes(categoryName)}
-                      onChange={() =>
-                        dispatch({
-                          type: "ADD_CATEGORIES",
-                          payload: categoryName,
-                        })
-                      }
-                      id={`category-${categoryName}`}
-                      type="checkbox"
-                    />
-                  </label>
-                </div>
-              ))}
-            </div>
-          </div>
-
           <div className="sorting-container">
             <h3>Sort by price</h3>
-
             <div className="sorting-input-container">
               <label htmlFor="high-to-low">
-                Price-high to low
+                Price - High to Low
                 <input
                   checked={state.filters.sort === "highToLow"}
                   onChange={() =>
@@ -206,7 +198,7 @@ export const Filter = () => {
               </label>
 
               <label htmlFor="low-to-high">
-                Price-low to high
+                Price - Low to High
                 <input
                   checked={state.filters.sort === "lowToHigh"}
                   onChange={() =>

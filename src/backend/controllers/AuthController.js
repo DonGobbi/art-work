@@ -1,14 +1,15 @@
 import { v4 as uuid } from "uuid";
 import { Response } from "miragejs";
-import { formatDate } from "../utils/authUtils.js";
-import sign from "jwt-encode";
+import { formatDate } from "../utils/authUtils";
+const jwt_encode = require('jwt-encode');
+
 /**
  * All the routes related to Auth are present here.
  * These are Publicly accessible routes.
  * */
 
 /**
- * This handler handles user signup's.
+ * This handler handles user signup.
  * send POST Request at /api/auth/signup
  * body contains {firstName, lastName, email, password}
  * */
@@ -23,7 +24,7 @@ export const signupHandler = function (schema, request) {
         422,
         {},
         {
-          errors: ["Sorry!. Email Already Exists."],
+          errors: ["Email already exists."],
         }
       );
     }
@@ -40,7 +41,7 @@ export const signupHandler = function (schema, request) {
       addressList: [],
     };
     const createdUser = schema.users.create(newUser);
-    const encodedToken = sign({ _id, email }, process.env.REACT_APP_JWT_SECRET);
+    const encodedToken = jwt_encode({ _id, email }, "secret");
     return new Response(201, {}, { createdUser, encodedToken });
   } catch (error) {
     return new Response(
@@ -67,23 +68,24 @@ export const loginHandler = function (schema, request) {
       return new Response(
         404,
         {},
-        { errors: ["The email you entered is not Registered. Not Found error"] }
+        { errors: ["Email not registered. Please sign up."] }
       );
     }
     if (password === foundUser.password) {
-      const encodedToken = sign(
+      const encodedToken = jwt_encode(
         { _id: foundUser._id, email },
-        process.env.REACT_APP_JWT_SECRET
+        "secret"
       );
-      foundUser.password = undefined;
-      return new Response(200, {}, { foundUser, encodedToken });
+      const sanitizedUser = { ...foundUser.attrs };
+      delete sanitizedUser.password;
+      return new Response(200, {}, { foundUser: sanitizedUser, encodedToken });
     }
     return new Response(
       401,
       {},
       {
         errors: [
-          "The credentials you entered are invalid. Unauthorized access error.",
+          "The credentials you entered are invalid.",
         ],
       }
     );
@@ -92,7 +94,7 @@ export const loginHandler = function (schema, request) {
       500,
       {},
       {
-        error,
+        errors: ["Something went wrong. Please try again later."],
       }
     );
   }

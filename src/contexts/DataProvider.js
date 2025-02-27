@@ -6,63 +6,74 @@ import {
   useState,
 } from "react";
 
-import { getAllCategories } from "../services/services";
-import { getAllProducts } from "../services/services";
+import { getAllCategories, getAllProducts } from "../services/services";
 import { dataReducer, initialState } from "../reducer/dataReducer";
 
 const DataContext = createContext();
 
 export function DataProvider({ children }) {
   const [state, dispatch] = useReducer(dataReducer, initialState);
-  const [loading, setLoading] = useState(false);
-  const [, setError] = useState(false);
+  const [productsLoading, setProductsLoading] = useState(true);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const getAllSneakers = async () => {
+  const fetchProducts = async () => {
     try {
-      setError(false);
-      setLoading(true);
+      setError(null);
+      setProductsLoading(true);
       const response = await getAllProducts();
-      if (response.request.status === 200) {
-        setLoading(false);
+      if (response.status === 200 && response.data?.products) {
         dispatch({
           type: "GET_ALL_PRODUCTS_FROM_API",
-          payload: [
-            ...response.data.products
-              .map((value) => ({ value, sort: Math.random() }))
-              .sort((a, b) => a.sort - b.sort)
-              .map(({ value }) => value),
-          ],
+          payload: response.data.products,
         });
+      } else {
+        throw new Error("Invalid response format");
       }
     } catch (error) {
-      setError(true);
-      console.error(error);
+      setError("Failed to fetch products");
+      console.error("Error fetching products:", error);
     } finally {
-      setLoading(false);
+      setProductsLoading(false);
     }
   };
 
-  const getCategories = async () => {
+  const fetchCategories = async () => {
     try {
+      setError(null);
+      setCategoriesLoading(true);
       const response = await getAllCategories();
-      if (response.request.status === 200) {
+      if (response.status === 200 && response.data?.categories) {
         dispatch({
           type: "GET_ALL_CATEGORIES",
           payload: response.data.categories,
         });
+      } else {
+        throw new Error("Invalid categories response");
       }
     } catch (error) {
-      console.error(error);
+      setError("Failed to fetch categories");
+      console.error("Error fetching categories:", error);
+    } finally {
+      setCategoriesLoading(false);
     }
   };
 
   useEffect(() => {
-    getAllSneakers();
-    getCategories();
+    fetchProducts();
+    fetchCategories();
   }, []);
 
+  const value = {
+    state,
+    dispatch,
+    productsLoading,
+    categoriesLoading,
+    error,
+  };
+
   return (
-    <DataContext.Provider value={{ state, dispatch, loading }}>
+    <DataContext.Provider value={value}>
       {children}
     </DataContext.Provider>
   );

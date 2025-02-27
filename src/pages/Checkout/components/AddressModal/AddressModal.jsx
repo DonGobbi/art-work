@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useAuth } from '../../../../contexts/AuthProvider';
 import './AddressModal.css';
 
 const validationSchema = Yup.object({
-  fullName: Yup.string()
-    .required('Full name is required')
-    .min(2, 'Name must be at least 2 characters'),
   addressLine1: Yup.string()
     .required('Address is required')
     .min(5, 'Address must be at least 5 characters'),
@@ -25,24 +23,22 @@ const validationSchema = Yup.object({
 });
 
 const AddressModal = ({ isOpen, onClose, onSave, initialAddress = {} }) => {
+  const { user } = useAuth();
+
   const [isActive, setIsActive] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
-      setTimeout(() => setIsActive(true), 10);
+      setIsActive(true);
     } else {
-      setIsActive(false);
-      document.body.style.overflow = 'unset';
+      const timer = setTimeout(() => setIsActive(false), 300);
+      return () => clearTimeout(timer);
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
   }, [isOpen]);
 
   const formik = useFormik({
     initialValues: {
-      fullName: initialAddress.fullName || '',
+      fullName: user?.displayName || '',
       addressLine1: initialAddress.addressLine1 || '',
       addressLine2: initialAddress.addressLine2 || '',
       city: initialAddress.city || '',
@@ -68,11 +64,11 @@ const AddressModal = ({ isOpen, onClose, onSave, initialAddress = {} }) => {
     setTimeout(onClose, 300);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !isActive) return null;
 
   return (
-    <div className={`address-modal-overlay ${isActive ? 'active' : ''}`}>
-      <div className={`address-modal ${isActive ? 'active' : ''}`}>
+    <div className={`address-modal-overlay ${isActive ? 'active' : ''}`} onClick={onClose}>
+      <div className={`address-modal ${isActive ? 'active' : ''}`} onClick={e => e.stopPropagation()}>
         <div className="address-modal-header">
           <h2 className="address-modal-title">Shipping Address</h2>
           <button className="address-modal-close" onClick={handleClose}>×</button>
@@ -83,13 +79,12 @@ const AddressModal = ({ isOpen, onClose, onSave, initialAddress = {} }) => {
             <label className="form-label" htmlFor="fullName">Full Name</label>
             <input
               id="fullName"
+              name="fullName"
               type="text"
-              className={`form-input ${formik.touched.fullName && formik.errors.fullName ? 'error' : ''}`}
-              {...formik.getFieldProps('fullName')}
+              value={formik.values.fullName}
+              readOnly
+              className="readonly-input"
             />
-            {formik.touched.fullName && formik.errors.fullName && (
-              <div className="error-message">{formik.errors.fullName}</div>
-            )}
           </div>
 
           <div className="form-group">

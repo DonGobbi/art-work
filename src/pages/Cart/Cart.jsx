@@ -18,10 +18,12 @@ export const Cart = () => {
     !loading &&
     (userDataState.cartProducts.length ? (
       <div>
-        <h1 className="page-heading">Cart</h1>
+        <h1 className="page-heading">Your Shopping Cart</h1>
         <div className="cart-container">
-          <CartListing />
-          <div>
+          <div className="cart-listing">
+            <CartListing />
+          </div>
+          <div className="cart-summary-container">
             <Coupons
               couponSelected={couponSelected}
               setCouponSelected={setCouponSelected}
@@ -32,12 +34,13 @@ export const Cart = () => {
       </div>
     ) : (
       <div className="no-items-container">
-        <h2 className="page-heading">Cart is Empty!</h2>
+        <h2 className="page-heading">Your Cart is Empty</h2>
+        <p>Ready to discover unique artworks? Start exploring our collection!</p>
         <button
           className="explore-btn"
           onClick={() => navigate("/product-listing")}
         >
-          Explore
+          <span>Browse Art Collection</span>
         </button>
       </div>
     ))
