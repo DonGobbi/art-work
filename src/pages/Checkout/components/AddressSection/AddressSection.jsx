@@ -13,22 +13,22 @@ export const AddressSection = () => {
     try {
       // Transform the form data to match your API structure
       const formattedAddress = {
-        name: addressData.fullName,
-        street: addressData.addressLine1,
+        name: addressData.name,
+        street: addressData.street,
         city: addressData.city,
         state: addressData.state,
-        country: "United States", // Default to US or make this configurable
-        pincode: addressData.zipCode,
+        country: addressData.country,
+        pincode: addressData.pincode,
         phone: addressData.phone,
         _id: editingAddress?._id // Preserve ID if editing
       };
 
       // If editing, update the address, otherwise add new
       const updatedAddresses = editingAddress
-        ? userDataState.addressList.map(addr => 
+        ? (userDataState.addressList || []).map(addr => 
             addr._id === editingAddress._id ? formattedAddress : addr
           )
-        : [...userDataState.addressList, { ...formattedAddress, _id: Date.now().toString() }];
+        : [...(userDataState.addressList || []), { ...formattedAddress, _id: Date.now().toString() }];
 
       // Update the address list in your state
       dispatch({
@@ -45,6 +45,7 @@ export const AddressSection = () => {
       }
 
       toast.success(editingAddress ? "Address updated successfully!" : "New address added successfully!");
+      setIsModalOpen(false);
       setEditingAddress(null);
     } catch (error) {
       console.error("Error saving address:", error);
@@ -53,15 +54,8 @@ export const AddressSection = () => {
   };
 
   const handleEditAddress = (address) => {
-    setEditingAddress({
-      fullName: address.name,
-      addressLine1: address.street,
-      addressLine2: "",
-      city: address.city,
-      state: address.state,
-      zipCode: address.pincode,
-      phone: address.phone
-    });
+    // No need to transform the data structure anymore since we're using the same structure
+    setEditingAddress(address);
     setIsModalOpen(true);
   };
 
@@ -69,7 +63,7 @@ export const AddressSection = () => {
     <div className="address-container">
       <h2 className="section-title">Shipping Address</h2>
       
-      {userDataState.addressList?.map((address) => {
+      {(userDataState.addressList || []).map((address) => {
         const { name, street, city, state, country, pincode, phone, _id } = address;
 
         return (

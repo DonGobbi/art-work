@@ -1,58 +1,66 @@
 .cart-price-container {
-  border-radius: 10px;
-  padding: 20px;
-  display: flex;
-  flex-flow: column nowrap;
-  margin: 10px 0 0 0;
-  background-color: rgb(242, 242, 242);
+  padding: 2rem;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
-.cart-price-container a {
-  text-decoration: none;
-  color: white;
-  background-color: var(--primary-color);
-  align-self: center;
-  padding: 10px 30px;
-  border-radius: 10px;
-  font-weight: 600;
-  font-size: 1rem;
-  margin-top: 40px;
-}
-
-.cart-price-container a:hover {
-  background-color: black;
-  cursor: pointer;
-}
-
-.cart-price-container .total {
-  font-weight: 700;
-  font-size: 35px;
-  color: black;
-}
 .cart-price-container h1 {
-  color: black;
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-weight: 600;
 }
 
-.cart-price-container > * {
-  margin-bottom: 10px;
+.subtotal-container,
+.discount-container,
+.shipping-container,
+.total {
   display: flex;
   justify-content: space-between;
-  color: grey;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #666;
+}
+
+.total {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 1.5rem 0;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
 }
 
 .total-discount-container {
-  color: rgb(55, 134, 18);
+  text-align: center;
+  color: #2ecc71;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
 }
 
-@media (min-width: 768px) {
+.place-order-btn {
+  width: 100%;
+  padding: 1rem;
+  background: #2c3e50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.place-order-btn:hover {
+  background: #34495e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
+}
+
+@media (max-width: 768px) {
   .cart-price-container {
-    width: 50vw;
-    flex-flow: column nowrap;
-    margin: 0 0 0 15px;
-    align-self: flex-start;
-    border-radius: 10px;
-    padding: 25px;
-    display: flex;
-    flex-flow: column nowrap;
+    padding: 1.5rem;
+    margin: 1rem;
   }
 }

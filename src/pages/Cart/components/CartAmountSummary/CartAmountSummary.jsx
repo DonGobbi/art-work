@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { useUserData } from "../../../../contexts/UserDataProvider.js";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import "./CartAmountSummary.css";
 
 export const CartAmountSummary = ({ couponSelected }) => {
   const { userDataState, dispatch } = useUserData();
+  const navigate = useNavigate();
 
   const totalDiscountedPriceBeforeCoupon = userDataState.cartProducts?.reduce(
     (acc, curr) => acc + curr.discounted_price * curr.qty,
@@ -31,6 +34,13 @@ export const CartAmountSummary = ({ couponSelected }) => {
   const isCouponApplied = couponSelected.length ? true : false;
 
   const placeOrderHandler = () => {
+    // Check if user has any addresses
+    if (!userDataState.addressList?.length) {
+      toast.error("Please add a delivery address first");
+      navigate("/profile/addresses");
+      return;
+    }
+
     dispatch({
       type: "SET_ORDER",
       payload: {
@@ -40,6 +50,7 @@ export const CartAmountSummary = ({ couponSelected }) => {
         orderAddress: userDataState.addressList[0],
       },
     });
+    navigate("/checkout");
   };
 
   return (
@@ -75,9 +86,9 @@ export const CartAmountSummary = ({ couponSelected }) => {
         </span>
       </div>
 
-      <Link onClick={placeOrderHandler} to="/checkout">
+      <button onClick={placeOrderHandler} className="place-order-btn">
         Place Order
-      </Link>
+      </button>
     </div>
   );
 };

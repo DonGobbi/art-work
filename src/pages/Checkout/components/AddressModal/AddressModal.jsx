@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useAuth } from '../../../../contexts/AuthProvider';
+import { countries } from '../../../../data/countries';
 import './AddressModal.css';
 
 const validationSchema = Yup.object({
-  addressLine1: Yup.string()
+  street: Yup.string()
     .required('Address is required')
     .min(5, 'Address must be at least 5 characters'),
   city: Yup.string()
@@ -14,18 +15,22 @@ const validationSchema = Yup.object({
   state: Yup.string()
     .required('State is required')
     .min(2, 'State must be at least 2 characters'),
-  zipCode: Yup.string()
-    .required('ZIP code is required')
-    .matches(/^\d{5}(-\d{4})?$/, 'Invalid ZIP code format'),
+  country: Yup.string()
+    .required('Country is required'),
+  pincode: Yup.string()
+    .required('PIN/ZIP code is required')
+    .matches(/^(\d{5}(-\d{4})?|\d{6})$/, 'Please enter a valid ZIP code (12345 or 12345-6789) or PIN code (123456)'),
   phone: Yup.string()
     .required('Phone number is required')
     .matches(/^\+?[\d\s-]{10,}$/, 'Invalid phone number format')
 });
 
-const AddressModal = ({ isOpen, onClose, onSave, initialAddress = {} }) => {
+const AddressModal = ({ isOpen, onClose, onSave, initialAddress }) => {
   const { user } = useAuth();
-
   const [isActive, setIsActive] = useState(false);
+
+  // Ensure initialAddress is properly initialized
+  const address = initialAddress || {};
 
   useEffect(() => {
     if (isOpen) {
@@ -38,13 +43,13 @@ const AddressModal = ({ isOpen, onClose, onSave, initialAddress = {} }) => {
 
   const formik = useFormik({
     initialValues: {
-      fullName: user?.displayName || '',
-      addressLine1: initialAddress.addressLine1 || '',
-      addressLine2: initialAddress.addressLine2 || '',
-      city: initialAddress.city || '',
-      state: initialAddress.state || '',
-      zipCode: initialAddress.zipCode || '',
-      phone: initialAddress.phone || ''
+      name: address.name || user?.displayName || '',
+      street: address.street || '',
+      city: address.city || '',
+      state: address.state || '',
+      country: address.country || 'United States',
+      pincode: address.pincode || '',
+      phone: address.phone || ''
     },
     validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
@@ -76,38 +81,30 @@ const AddressModal = ({ isOpen, onClose, onSave, initialAddress = {} }) => {
         
         <form onSubmit={formik.handleSubmit} className="address-form">
           <div className="form-group">
-            <label className="form-label" htmlFor="fullName">Full Name</label>
+            <label className="form-label" htmlFor="name">Full Name</label>
             <input
-              id="fullName"
-              name="fullName"
+              id="name"
+              name="name"
               type="text"
-              value={formik.values.fullName}
-              readOnly
-              className="readonly-input"
+              className={`form-input ${formik.touched.name && formik.errors.name ? 'error' : ''}`}
+              {...formik.getFieldProps('name')}
             />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label" htmlFor="addressLine1">Address Line 1</label>
-            <input
-              id="addressLine1"
-              type="text"
-              className={`form-input ${formik.touched.addressLine1 && formik.errors.addressLine1 ? 'error' : ''}`}
-              {...formik.getFieldProps('addressLine1')}
-            />
-            {formik.touched.addressLine1 && formik.errors.addressLine1 && (
-              <div className="error-message">{formik.errors.addressLine1}</div>
+            {formik.touched.name && formik.errors.name && (
+              <div className="error-message">{formik.errors.name}</div>
             )}
           </div>
 
           <div className="form-group">
-            <label className="form-label" htmlFor="addressLine2">Address Line 2 (Optional)</label>
+            <label className="form-label" htmlFor="street">Street Address</label>
             <input
-              id="addressLine2"
+              id="street"
               type="text"
-              className="form-input"
-              {...formik.getFieldProps('addressLine2')}
+              className={`form-input ${formik.touched.street && formik.errors.street ? 'error' : ''}`}
+              {...formik.getFieldProps('street')}
             />
+            {formik.touched.street && formik.errors.street && (
+              <div className="error-message">{formik.errors.street}</div>
+            )}
           </div>
 
           <div className="form-row">
@@ -138,15 +135,36 @@ const AddressModal = ({ isOpen, onClose, onSave, initialAddress = {} }) => {
             </div>
 
             <div className="form-group">
-              <label className="form-label" htmlFor="zipCode">ZIP Code</label>
+              <label className="form-label" htmlFor="country">Country</label>
+              <select
+                id="country"
+                className={`form-input ${formik.touched.country && formik.errors.country ? 'error' : ''}`}
+                {...formik.getFieldProps('country')}
+              >
+                <option value="">Select a country</option>
+                {countries.map(country => (
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
+                ))}
+              </select>
+              {formik.touched.country && formik.errors.country && (
+                <div className="error-message">{formik.errors.country}</div>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="pincode">
+                {formik.values.country === 'India' ? 'PIN Code' : 'ZIP Code'}
+              </label>
               <input
-                id="zipCode"
+                id="pincode"
                 type="text"
-                className={`form-input ${formik.touched.zipCode && formik.errors.zipCode ? 'error' : ''}`}
-                {...formik.getFieldProps('zipCode')}
+                className={`form-input ${formik.touched.pincode && formik.errors.pincode ? 'error' : ''}`}
+                {...formik.getFieldProps('pincode')}
               />
-              {formik.touched.zipCode && formik.errors.zipCode && (
-                <div className="error-message">{formik.errors.zipCode}</div>
+              {formik.touched.pincode && formik.errors.pincode && (
+                <div className="error-message">{formik.errors.pincode}</div>
               )}
             </div>
           </div>
