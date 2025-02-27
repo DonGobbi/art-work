@@ -4,7 +4,8 @@ import { useAuth } from "../../../contexts/AuthProvider";
 import { addAddressService } from "../../../services/address-services/addAddressService";
 import { getAddressService } from "../../../services/address-services/getAddressService";
 import { useUserData } from "../../../contexts/UserDataProvider";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
+import { countries } from "../../../data/countries";
 import "./Addresses.css";
 
 export const Addresses = () => {
@@ -21,6 +22,7 @@ export const Addresses = () => {
     city: "",
     state: "",
     zipCode: "",
+    country: ""
   });
 
   useEffect(() => {
@@ -51,6 +53,12 @@ export const Addresses = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!formData.country) {
+      toast.error("Please select a country");
+      return;
+    }
+    
     setIsSubmitting(true);
 
     try {
@@ -61,7 +69,7 @@ export const Addresses = () => {
         state: formData.state,
         pincode: formData.zipCode,
         phone: formData.phone,
-        country: "India"
+        country: formData.country
       };
 
       const response = await addAddressService(addressData, auth.token);
@@ -78,6 +86,7 @@ export const Addresses = () => {
           city: "",
           state: "",
           zipCode: "",
+          country: ""
         });
       }
     } catch (error) {
@@ -186,6 +195,25 @@ export const Addresses = () => {
               </div>
 
               <div className="form-group">
+                <label htmlFor="country">Country</label>
+                <select
+                  id="country"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleChange}
+                  required
+                  className="form-select"
+                >
+                  <option value="">Select a country</option>
+                  {countries.map(country => (
+                    <option key={country} value={country}>
+                      {country}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group">
                 <label htmlFor="street">Street Address</label>
                 <input
                   type="text"
@@ -207,7 +235,7 @@ export const Addresses = () => {
                     name="city"
                     value={formData.city}
                     onChange={handleChange}
-                    placeholder="Enter city"
+                    placeholder="Enter your city"
                     required
                   />
                 </div>
@@ -220,33 +248,39 @@ export const Addresses = () => {
                     name="state"
                     value={formData.state}
                     onChange={handleChange}
-                    placeholder="Enter state"
+                    placeholder="Enter your state"
                     required
                   />
                 </div>
               </div>
 
               <div className="form-group">
-                <label htmlFor="zipCode">ZIP Code</label>
+                <label htmlFor="zipCode">{formData.country === 'India' ? 'PIN Code' : 'ZIP Code'}</label>
                 <input
                   type="text"
                   id="zipCode"
                   name="zipCode"
                   value={formData.zipCode}
                   onChange={handleChange}
-                  placeholder="Enter ZIP code"
+                  placeholder={formData.country === 'India' ? 'Enter PIN code' : 'Enter ZIP code'}
                   required
-                  pattern="[0-9]{6}"
-                  title="Please enter a valid 6-digit ZIP code"
+                  pattern={formData.country === 'India' ? '[0-9]{6}' : '[0-9]{5}(-[0-9]{4})?'}
+                  title={formData.country === 'India' ? 'Please enter a valid 6-digit PIN code' : 'Please enter a valid ZIP code (12345 or 12345-6789)'}
                 />
               </div>
 
               <div className="form-actions">
-                <button type="button" className="cancel-btn" onClick={() => setShowModal(false)}>
-                  Cancel
-                </button>
-                <button type="submit" className="save-btn" disabled={isSubmitting}>
-                  {isSubmitting ? "Saving..." : "Save Address"}
+                <button type="submit" className="submit-btn" disabled={isSubmitting}>
+                  {isSubmitting ? (
+                    <>
+                      <span className="loading-spinner"></span>
+                      Adding Address...
+                    </>
+                  ) : (
+                    <>
+                      <span>Save Address</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>

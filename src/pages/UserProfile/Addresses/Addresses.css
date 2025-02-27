@@ -19,6 +19,8 @@
 }
 
 .addresses-container {
+  max-width: 1200px;
+  margin: 0 auto;
   padding: 2rem;
   background: white;
   border-radius: 8px;
@@ -30,14 +32,14 @@
 }
 
 .addresses-header h2 {
-  font-size: 1.5rem;
-  color: #1a202c;
+  font-size: 1.8rem;
+  color: #333;
   font-weight: 600;
   margin-bottom: 0.5rem;
 }
 
 .addresses-header p {
-  color: #64748b;
+  color: #666;
   font-size: 0.875rem;
 }
 
@@ -45,24 +47,30 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: #2c3e50;
+  background-color: #3498db;
   color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  padding: 1rem 2rem;
+  border-radius: 8px;
   cursor: pointer;
-  margin-bottom: 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border: none;
+  width: auto;
+  margin: 0 auto 2rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
 }
 
 .add-address-btn:hover {
-  background: #34495e;
+  background-color: #2980b9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
 }
 
 .plus {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   line-height: 1;
+  margin-right: 0.5rem;
 }
 
 .addresses-grid {
@@ -72,33 +80,36 @@
 }
 
 .address-card {
-  border: 1px solid #e2e8f0;
+  background-color: #fff;
+  border: 1px solid #e1e1e1;
   border-radius: 8px;
   padding: 1.5rem;
   margin-bottom: 1rem;
-  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.address-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
 .recipient-name {
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 600;
-  color: #1a202c;
-  margin-bottom: 1rem;
+  color: #333;
+  margin-bottom: 0.5rem;
 }
 
 .address-details {
-  color: #4a5568;
-  font-size: 0.875rem;
+  color: #666;
   line-height: 1.5;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .phone-details {
-  color: #4a5568;
-  font-size: 0.875rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  color: #666;
+  margin-bottom: 1rem;
 }
 
 .address-actions {
@@ -109,71 +120,61 @@
   border-top: 1px solid #e2e8f0;
 }
 
-.edit-btn,
-.delete-btn {
+.edit-btn, .delete-btn {
   padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  border-radius: 4px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
 }
 
 .edit-btn {
-  background: #edf2f7;
-  color: #2d3748;
+  background-color: #fff;
+  border: 1px solid #3498db;
+  color: #3498db;
 }
 
 .edit-btn:hover {
-  background: #e2e8f0;
+  background-color: #3498db;
+  color: #fff;
 }
 
 .delete-btn {
-  background: #fff5f5;
-  color: #e53e3e;
+  background-color: #fff;
+  border: 1px solid #e74c3c;
+  color: #e74c3c;
 }
 
 .delete-btn:hover {
-  background: #fed7d7;
+  background-color: #e74c3c;
+  color: #fff;
 }
 
 .no-addresses {
   text-align: center;
-  padding: 3rem 2rem;
-  background: white;
-  border: 2px dashed #e2e8f0;
-  border-radius: 0.75rem;
-}
-
-.no-addresses-icon {
-  font-size: 3rem;
-  margin-bottom: 1.5rem;
-  color: #94a3b8;
+  padding: 3rem 1rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  margin-top: 2rem;
 }
 
 .no-addresses h2 {
-  color: #1a202c;
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
+  color: #333;
+  margin-bottom: 1rem;
 }
 
 .no-addresses p {
-  color: #64748b;
-  max-width: 400px;
-  margin: 0 auto;
+  color: #666;
 }
 
-/* Modal styles */
+/* Modal Styles */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -182,44 +183,54 @@
 }
 
 .modal-content {
-  background: white;
-  border-radius: 8px;
+  background-color: #fff;
+  border-radius: 12px;
   width: 100%;
-  max-width: 500px;
-  position: relative;
-  max-height: calc(100vh - 2rem);
+  max-width: 600px;
+  max-height: 90vh;
   overflow-y: auto;
-  margin: 1rem;
+  position: relative;
+  animation: modalSlideIn 0.3s ease;
 }
 
-.modal-header {
-  position: sticky;
-  top: 0;
-  background: white;
-  padding: 1.5rem;
-  border-bottom: 1px solid #e2e8f0;
-  z-index: 1;
-}
-
-.modal-header h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #1a202c;
-  margin-right: 2rem;
+@keyframes modalSlideIn {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .modal-close {
   position: absolute;
-  top: 1.25rem;
-  right: 1.25rem;
+  top: 1rem;
+  right: 1rem;
   background: none;
   border: none;
   font-size: 1.5rem;
   cursor: pointer;
-  color: #718096;
+  color: #666;
   padding: 0.5rem;
-  line-height: 0.5;
-  z-index: 2;
+  line-height: 1;
+  transition: color 0.3s ease;
+}
+
+.modal-close:hover {
+  color: #333;
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
 }
 
 .address-form {
@@ -232,43 +243,73 @@
 
 .form-group label {
   display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #2d3748;
   margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 500;
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 0.875rem;
-  transition: all 0.2s ease;
+  transition: border-color 0.3s ease;
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
   outline: none;
-  border-color: #2c3e50;
-  box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+}
+
+.form-group input::placeholder {
+  color: #999;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-actions {
-  display: flex;
-  gap: 1rem;
   margin-top: 2rem;
-  position: sticky;
-  bottom: 0;
-  background: white;
-  padding: 1.5rem;
-  border-top: 1px solid #e2e8f0;
-  margin: 0 -1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e1e1e1;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 1rem;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background-color: #2980b9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+}
+
+.submit-btn:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .cancel-btn,
@@ -296,6 +337,80 @@
 .save-btn:disabled {
   background: #a0aec0;
   cursor: not-allowed;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+  margin-right: 0.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .addresses-container {
+    padding: 1rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .address-card {
+    padding: 1rem;
+  }
+
+  .address-actions {
+    flex-direction: column;
+  }
+
+  .edit-btn,
+  .delete-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .modal-content {
+    margin: 0.5rem;
+    max-height: 85vh;
+  }
+
+  .modal-header {
+    padding: 1rem;
+  }
+
+  .address-form {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .addresses-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .add-address-btn {
+    padding: 0.75rem;
+  }
+
+  .form-group input,
+  .form-group select {
+    padding: 0.6rem;
+  }
+
+  .submit-btn {
+    padding: 0.75rem;
+  }
 }
 
 @media (max-width: 640px) {

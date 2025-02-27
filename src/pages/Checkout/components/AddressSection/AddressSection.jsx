@@ -1,8 +1,8 @@
-import "./AddressSection.css";
 import React, { useState } from "react";
 import { useUserData } from "../../../../contexts/UserDataProvider.js";
 import AddressModal from "../AddressModal/AddressModal";
-import { toast } from "react-hot-toast";
+import { toast } from "react-toastify";
+import './AddressSection.css';
 
 export const AddressSection = () => {
   const { userDataState, dispatch } = useUserData();
@@ -68,33 +68,56 @@ export const AddressSection = () => {
 
         return (
           <div key={_id} className="address-card">
-            <div className="address-card-header">
-              <input
-                checked={_id === userDataState.orderDetails?.orderAddress?._id}
-                onChange={() => {
-                  dispatch({
-                    type: "SET_ORDER",
-                    payload: { orderAddress: address },
-                  });
-                }}
-                name="address"
-                id={_id}
-                type="radio"
-              />
-              <label htmlFor={_id} className="address-label">
-                <p className="name">{name}</p>
-                <p className="address">
-                  {street}, {city}, {state}, {country} {pincode}
+            <div className="address-card-content">
+              <div className="radio-wrapper">
+                <input
+                  checked={_id === userDataState.orderDetails?.orderAddress?._id}
+                  onChange={() => {
+                    dispatch({
+                      type: "SET_ORDER",
+                      payload: { orderAddress: address },
+                    });
+                  }}
+                  name="address"
+                  id={_id}
+                  type="radio"
+                />
+              </div>
+              <label htmlFor={_id} className="address-details">
+                <h3 className="address-name">{name}</h3>
+                <p className="address-text">
+                  {street},<br />
+                  {city}, {state}, {pincode}<br />
+                  {country}
                 </p>
-                <p className="phone">{phone}</p>
+                <p className="address-phone">
+                  <span className="phone-label">Phone:</span> {phone}
+                </p>
               </label>
+              <div className="address-actions">
+                <button 
+                  className="action-btn edit-btn"
+                  onClick={() => handleEditAddress(address)}
+                  aria-label="Edit address"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                  </svg>
+                </button>
+                <button 
+                  className="action-btn delete-btn"
+                  onClick={() => {/* Add delete handler */}}
+                  aria-label="Delete address"
+                >
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M3 6h18" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                </button>
+              </div>
             </div>
-            <button 
-              className="edit-address-btn"
-              onClick={() => handleEditAddress(address)}
-            >
-              Edit
-            </button>
           </div>
         );
       })}
@@ -107,6 +130,9 @@ export const AddressSection = () => {
             setIsModalOpen(true);
           }}
         >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
           Add New Address
         </button>
       </div>
